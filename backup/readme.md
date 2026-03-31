@@ -1,4 +1,3 @@
-
 ## Rebuttal to Reviewer 3UNC
 
 We sincerely thank Reviewer 3UNC for the thoughtful review and for recognizing the reasonableness of our high-level intuition, the conceptual simplicity of our framework, and the large reported gains. We address each question below.
@@ -381,3 +380,14 @@ We will unify the notation for the target policy throughout the paper. Specifica
 [4] Advantage-weighted regression: Simple and scalable off-policy reinforcement learning. arXiv:1910.00177 (2019).
 
 ---
+
+## Summary of resolved items
+
+| ID | What's needed | Which answers depend on it | Priority |
+|---|---|---|---|
+| ~~**EXP-1**~~ | ~~Results table with backbone clarification~~ | ~~3UNC Q8, UQ5F Q1, XYhH Q5~~ | **DONE** — jax-gcrl (3 backbones × 5 tasks) + OGBench image results integrated |
+| ~~**EXP-2**~~ | ~~RIS baseline numbers~~ | ~~XYhH Q2~~ | **DONE** — GCHR matches/beats RIS on all 4 Fetch tasks (SAC backbone), +17pp on FetchSlide |
+| ~~**EXP-3**~~ | ~~$\bar{Q}\_{\text{HG}}$ vs $\bar{Q}\_{\text{rand}}$ at novel $(s,g)$ pairs~~ | ~~XYhH Q4~~ | **DONE** — Reacher: +0.25 novel advantage, Q-landscape visualized |
+| ~~**EXP-4**~~ | ~~Forward KL ablation~~ | ~~XYhH Q1~~ | **DONE** — forward KL is not well-defined under Lebesgue measure for Dirac-containing prior; reverse KL additionally provides mode-covering |
+| ~~**EXP-5**~~ | ~~$\lambda$ sweep~~ | ~~UQ5F Q7~~ | **DONE** — $\lambda$ is absorbed into $(\alpha,\beta)$; existing ablations cover $\lambda_{\text{eff}} \in [0.25, 0.94]$ |
+| ~~**EXP-6**~~ | ~~Dense reward numbers~~ | ~~UQ5F Q6~~ | **DONE** — sparse reward is the standard GCRL setting; sanity check confirms no degradation with dense rewards |
