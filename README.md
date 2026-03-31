@@ -266,7 +266,7 @@ Novel fraction: 17.7%. **The key result: novel $\pi_{\text{HG}}$ actions achieve
 
 The 2D action space of Reacher allows direct visualization of this effect. Figure R3 shows the Q-landscape $Q(s, \cdot, g)$ as a heatmap over the action space, with $\rho_{\text{beh}}$ actions (red ×), novel $\pi_{\text{HG}}$ actions (blue ○), and the policy action (green ★). Novel actions land in high-Q regions beyond the behavioral support:
 
-![Figure R3: Q-landscape showing coverage expansion on Reacher.](action_coverage_res/figure_a_reacher_qlandscape.png)
+![Figure R3: Q-landscape showing coverage expansion on Reacher.](action_coverage_res/results_reacher/figure_a_reacher_qlandscape.png)
 *Figure R3. Q-landscape on Reacher for three $(s,g)$ pairs. Background: $Q(s,\cdot,g)$ over 2D action space (blue = high Q, red = low Q). Red ×: $\rho_{\text{beh}}$. Blue ○: novel $\pi_{\text{HG}}$ actions. Green ★: $\pi_\theta$. Novel actions consistently land in high-Q regions beyond the behavioral support.*
 
 **Pusher Easy (higher-dim actions, SAC+GCHR):** In higher-dimensional action spaces, the distance-based novelty criterion becomes less discriminative (novel fraction ~97%), so the novel/covered partition is less clean. However, the over-training dynamics are informative: at 2.2M steps (early exploration), novel actions achieve +0.91 advantage over random — strongly positive — showing that coverage expansion is most impactful during exploration when the behavioral support is sparse. As the policy converges and $\rho_{\text{beh}}$ fills in, the marginal value of novel actions diminishes, consistent with GCHR's design.
