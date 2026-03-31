@@ -1,0 +1,19 @@
+===========================================================================
+Coverage Expansion Analysis — reacher (SAC+GCHR)
+Checkpoint: 5,110,784 env steps
+===========================================================================
+Action Source                Advantage        SEM Notes
+---------------------------------------------------------------------------
+rho_beh (recorded)             +0.9372   +-0.0720 behavioral support
+pi_HG (covered)                +1.0546   +-0.0834 overlap with rho_beh
+pi_HG (novel)                  +0.2532   +-0.0662 OUTSIDE rho_beh
+pi_theta (policy)              +1.2047   +-0.0861 trained policy
+Random                           0.000            baseline (= 0)
+---------------------------------------------------------------------------
+Novel fraction: 17.7% +- 22.6%
+N pairs analyzed: 300
+
+Key: Adv(pi_HG novel) = +0.2532
+  => POSITIVE: novel actions have higher Q than random
+     Adv(pi_theta)     = +1.2047 (sanity: should be highest)
+===========================================================================

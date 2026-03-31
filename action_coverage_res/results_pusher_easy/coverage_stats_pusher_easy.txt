@@ -1,0 +1,18 @@
+===========================================================================
+Coverage Expansion Analysis — pusher_easy (SAC+GCHR)
+Checkpoint: 8,380,416 env steps
+===========================================================================
+Action Source                Advantage        SEM Notes
+---------------------------------------------------------------------------
+rho_beh (recorded)             +0.0770   +-0.0268 behavioral support
+pi_HG (covered)                +0.1920   +-0.0641 overlap with rho_beh
+pi_HG (novel)                  -0.0798   +-0.0297 OUTSIDE rho_beh
+pi_theta (policy)              +0.0858   +-0.0276 trained policy
+Random                           0.000            baseline (= 0)
+---------------------------------------------------------------------------
+Novel fraction: 96.6% +- 7.3%
+N pairs analyzed: 300
+
+Key: Adv(pi_HG novel) = -0.0798
+     Adv(pi_theta)     = +0.0858 (sanity: should be highest)
+===========================================================================
