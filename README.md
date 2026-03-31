@@ -113,7 +113,10 @@ Given that GCHR reaches equivalent success rates 1.5–2× faster in environment
 The 2D action space allows direct visualization:
 
 ![Figure R3: Q-landscape showing coverage expansion on Reacher.](action_coverage_res/results_reacher/figure_a_reacher_qlandscape.png)
-*Figure R3. Q-landscape on Reacher for three $(s,g)$ pairs. Background: $Q(s,\cdot,g)$ over 2D action space (blue = high Q, red = low Q). Red ×: $\rho_{\text{beh}}$. Blue ○: novel $\pi_{\text{HG}}$ actions. Green ★: $\pi_\theta$. Novel actions consistently land in high-Q regions beyond the behavioral support. We provide direct empirical verification that $\rho_{\text{HG}}$ discovers useful actions outside the behavioral support, not mere smoothing. For $N{=}300$ $(s,g)$ pairs sampled from the replay buffer, we draw 200 actions from $\rho_{\text{HG}}$ and classify each as **novel** (minimum $\ell_2$ distance to any $\rho_{\text{beh}}$ action exceeds threshold $\varepsilon$) or **covered** (within $\varepsilon$). Q-advantages are normalized per-pair against random actions. Novel fraction: 17.7%. **Novel $\pi_{\text{HG}}$ actions achieve +0.25 advantage over random, confirming genuine coverage expansion.** These novel actions are expectedly weaker than behavioral actions (+0.25 vs +0.94), since they originate from behaviors toward *related but different* goals.*
+*Figure R3. Coverage expansion on Reacher. Background heatmap: Q(s,⋅,g)Q(s,\cdot,g)
+Q(s,⋅,g) over the 2D action space (blue = high Q, red = low Q). Red ×: actions from ρbeh\rho_{\text{beh}}
+ρbeh​ (behavioral support). Blue ○: novel actions from πHG\pi_{\text{HG}}
+πHG​ (outside behavioral support). Green ★: current policy action. The blue dots land in high-Q (blue) regions beyond the red crosses, showing that the hindsight goal prior discovers valuable actions that behavioral cloning alone would miss.*
 
 ### Pusher Easy (higher-dim actions, SAC+GCHR)
 
