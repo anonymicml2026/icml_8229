@@ -33,13 +33,7 @@ We evaluate GCHR on top of three fundamentally different backbones — CRL (cont
 ![Figure R2: Final success rate comparison across tasks.](jax-gcrl-res/icml_bar_chart.png)
 *Figure R2. Final success rate across all methods and tasks. Within each task, X+GCHR (darker bar) consistently outperforms the corresponding baseline X and X+HER.*
 
-**Key observations:**
 
-**(1) GCHR is backbone-agnostic.** GCHR improves CRL (+31% avg), SAC+HER (+33% avg), and TD3+HER (+36% avg) — three fundamentally different algorithm families. This validates GCHR as a general bootstrapping mechanism, not an algorithm-specific trick.
-
-**(2) GCHR is complementary to CRL.** CRL+GCHR outperforms CRL on all 5 tasks. Since CRL is among the strongest modern GCRL baselines (and underlies the 1000-Layer Networks paper requested by Reviewer UQ5F), this demonstrates that our policy-space regularization provides orthogonal benefits to representation-learning approaches.
-
-**(3) GCHR avoids HER failure modes.** On Ant Soccer, HER catastrophically degrades both SAC (0.449→0.002) and TD3 (0.357→0.000). GCHR maintains performance close to the no-HER baseline (SAC+GCHR: 0.387, TD3+GCHR: 0.360) while still benefiting from hindsight on other tasks. This robustness arises because our compositional prior aggregates diverse behaviors rather than memorizing specific trajectories.
 
 ### (b) Image-Based and Visual Manipulation Tasks
 
@@ -61,88 +55,11 @@ GCHR outperforms both QRL and TD-InfoNCE across all tasks, demonstrating general
 
 ---
 
-## MQ2. Is GCHR Just Behavioral Regularization? / Novelty
-
-**Raised by:** Reviewer 3UNC (Q6), Reviewer XYhH (W3)
-
-The structural form of Eq. 21 resembles behavioral regularization, but the prior is fundamentally different from standard behavioral regularization used in offline RL [R1, R2]. We highlight three distinctions:
-
-1. **Evolving prior.** Standard behavioral regularization regularizes toward a fixed, unstructured data distribution $\beta(a|s)$. GCHR's prior $\rho_{\text{mix}}$ evolves with the policy through the target network $\bar{\pi}_\theta$, creating a self-reinforcing bootstrapping loop: better policy → better prior → better policy.
-
-2. **Compositional structure.** The prior is a mixture $\rho_{\text{mix}} = \lambda\,\rho_{\text{beh}} + (1-\lambda)\,\rho_{\text{HG}}$ that aggregates knowledge across multiple intermediate waypoints via $\rho_{\text{HG}}(a|s,g) = \frac{1}{K}\sum_{k=1}^{K}\bar{\pi}_\theta(a|s,g'_k)$. Standard behavioral regularization has no such goal-compositional structure.
-
-3. **Provable coverage expansion.** Theorem 6.1 proves $\mathcal{A}_{\text{beh}}(s,g) \subseteq \mathcal{A}_{\text{HG}}(s,g)$: the goal prior covers strictly more actions than self-imitation. We provide direct empirical evidence confirming this in **MQ7** below — novel actions from $\rho_{\text{HG}}$ outside the behavioral support achieve positive Q-advantage over random, demonstrating genuine coverage expansion rather than mere smoothing.
-
-Moreover, our new experiments (Table R1) show GCHR consistently improves three different backbones (CRL, SAC, TD3) with zero additional learned components. RIS requires a subgoal prediction network. MHER requires a dynamics model. GCHR adds two loss terms to any existing actor-critic. This simplicity combined with broad, backbone-agnostic effectiveness is the contribution.
-
-**References:**
-[R1] A Minimalist Approach to Offline RL. NeurIPS 2021.
-[R2] Revisiting the Minimalist Approach to Offline RL. NeurIPS 2023.
 
 ---
 
-## MQ3. Forward KL vs Reverse KL / Objective Switch from Sec. 4 to Sec. 5
 
-**Raised by:** Reviewer 3UNC (Q5), Reviewer XYhH (Q1)
-
-### Why Sec. 4 and Sec. 5 use different objectives
-
-Eq. 5 in Sec. 4 ($D_{\text{KL}}(\pi \Vert \rho)$ regularization) serves as **conceptual motivation**: it shows that under KL-regularized RL, the optimal policy reweights the prior by exponentiated Q-values (Eq. 6), establishing that a well-designed prior accelerates convergence. The practical objective Eq. 21 in Sec. 5 implements this insight through a modular design: the RL term handles Q-value maximization, while the reverse KL $D_{\text{KL}}(\rho_{\text{mix}} \Vert \pi_\theta)$ handles prior-matching. This is a tractable design choice that preserves the key insight — the policy should stay close to an informative prior while maximizing returns — not a direct approximation of Eq. 5.
-
-### Why reverse KL, not forward KL
-
-The choice of $D_{\text{KL}}(\rho_{\text{mix}} \Vert \pi_\theta)$ is driven by both **mathematical necessity** and a desirable **mode-covering property**.
-
-**The forward KL is not well-defined under Lebesgue measure for our prior.** Computing $D_{\text{KL}}(\pi_\theta \Vert \rho_{\text{mix}}) = \mathbb{E}_{a \sim \pi_\theta}[\log \pi_\theta(a) - \log \rho_{\text{mix}}(a)]$ requires pointwise evaluation of $\log \rho_{\text{mix}}(a)$. Since $\rho_{\text{mix}} = \lambda\,\delta_{a_t} + (1-\lambda)\,\rho_{\text{HG}}$, the Dirac component $\delta_{a_t}$ is a singular measure — not absolutely continuous with respect to Lebesgue measure on continuous action spaces, so no pointwise-evaluable density exists. One could restrict to the continuous component $\rho_{\text{HG}}$ alone or define a KL with respect to a different base measure, but either approach would lose the behavior prior signal entirely or require an ad hoc reformulation that severs the connection to the compositional prior $\rho_{\text{mix}}$.
-
-**The reverse KL decomposes tractably and preserves both components.** Minimizing $D_{\text{KL}}(\rho_{\text{mix}} \Vert \pi_\theta)$ w.r.t. $\theta$ is equivalent to maximizing $\mathbb{E}_{a \sim \rho_{\text{mix}}}[\log \pi_\theta(a \mid s,g)]$, which only requires evaluating the well-defined Gaussian density $\pi_\theta$ at samples drawn from $\rho_{\text{mix}}$. Using the mixture structure:
-
-$$\mathbb{E}_{a \sim \rho_{\text{mix}}}[\log \pi_\theta(a \mid s,g)] = \lambda \underbrace{\log \pi_\theta(a_t \mid s,g)}_{-\mathcal{L}_{\text{beh}}} + (1-\lambda) \underbrace{\mathbb{E}_{a \sim \pi_{\text{HG}}}[\log \pi_\theta(a \mid s,g)]}_{-\mathcal{L}_{\text{HG}} + \text{const w.r.t.}\ \theta}$$
-
-The Dirac component yields the behavior cloning loss (Eq. 17); the continuous component yields the KL matching loss (Eq. 20). This clean decomposition is a direct consequence of the reverse KL.
-
-**Mode-covering property.** Minimizing $D_{\text{KL}}(\rho_{\text{mix}} \Vert \pi_\theta)$ forces $\pi_\theta$ to place density wherever $\rho_{\text{mix}}$ has mass. Even if one could define a valid forward KL variant, it would be mode-seeking: a unimodal Gaussian $\pi_\theta$ would collapse onto a single mode of the multimodal $\rho_{\text{mix}}$, losing the diversity benefit of our compositional prior.
-
----
-
-## MQ4. Assumption 4.1 — Validity, Empirical Evidence
-
-**Raised by:** Reviewer 3UNC (Q4), Reviewer k84A (W1, Q4)
-
-### What the assumption does and does not claim
-
-Assumption 4.1 does **not** directly relate $V^\pi(s, g')$ to $V^\pi(s, g_{\text{target}})$. It serves a more specific role: once the agent reaches any state $s' \in S_{g'}$ satisfying intermediate goal $g'$, the remaining value $V^\pi(s', g_{\text{target}})$ is approximately constant (within $\delta$) regardless of which specific $s'$ was reached. This makes the via-goal value decomposition $V^\pi_{\text{via}}(s, g; g') = p^\pi(g'|s) \cdot \mathbb{E}_{s' \sim d^\pi(\cdot|s,g')}[V^\pi(s', g)]$ (Eq. 26) well-defined and enables Theorem 6.2.
-
-The mechanism by which $\rho_{\text{HG}}$ accelerates learning is **coverage expansion** (Theorem 6.1, empirically verified in **MQ7**): the prior proposes diverse actions from behaviors toward multiple intermediate goals, and the RL critic (first term in Eq. 21) selects which actions are useful for reaching $g_{\text{target}}$.
-
-### Empirical measurement
-
-We agree that directly measuring this assumption would strengthen the paper, and we commit to including quantitative measurements in the revision — specifically, computing $|V^\pi(s_1, g_{\text{target}}) - V^\pi(s_2, g_{\text{target}})|$ for sampled pairs $s_1, s_2 \in S_{g'}$ using the learned critic across training epochs.
-
-Our empirical results already provide indirect evidence: GCHR's advantage is largest on tasks where the assumption is most reasonable (Fetch tasks, HandReach — where different configurations at the same end-effector pose have similar distances to targets), and degrades on tasks where the assumption is more approximate (BlockRotateXYZ, BlockRotateParallel — where different joint configurations achieving similar end-effector poses can have substantially different reachability to target rotations).
-
-
-
----
-
-## MQ5. RIS and SAW Comparison
-
-**Raised by:** Reviewer k84A (Q5), Reviewer XYhH (Q2)
-
-### Structural comparison
-
-| | **GCHR** | **RIS** [R3] | **SAW** [R4] |
-|---|---|---|---|
-| Setting | Online | Online | Offline |
-| Additional networks | None (reuses target net) | Subgoal prediction net | Subpolicy $\pi_{\text{sub}}$ |
-| Prior construction | Mixture over $K$ waypoints | Single imagined midpoint | Advantage-weighted regression |
-| Training | End-to-end, single phase | End-to-end + subgoal net | Three sequential phases |
-| Prior evolution | Co-evolves with policy | Co-evolves (via subgoal net) | Static (fixed offline data) |
-| Monotonic improvement | Theorem 6.2 | Not established | Not established |
-
-The key structural difference from RIS: GCHR aggregates $K$ hindsight goals from actual trajectories into a mixture prior, while RIS uses a single imagined midpoint from a learned subgoal prediction network. GCHR requires no additional learned components. The key difference from SAW: GCHR operates online with an evolving prior, enabling Theorem 6.2 (monotonic improvement); SAW's prior is static.
-
-### RIS experimental comparison
+## MQ2. RIS experimental comparison
 
 All methods use the **SAC backbone** for fair comparison:
 
@@ -155,15 +72,11 @@ All methods use the **SAC backbone** for fair comparison:
 | CRL | 100±0 | 6±5 | 2±1 | 8±2 |
 | **SAC+GCHR** | **100±0** | **99±3** | **38±3** | **52±6** |
 
-GCHR matches or outperforms RIS on all tasks, with the largest advantage on FetchSlide (+17pp). Notably, CRL — strong on locomotion/navigation (Table R1) — performs poorly on Fetch manipulation (6–8% on Push/Slide/Pick), highlighting that GCHR performs well across both domains.
 
-**References:**
-[R3] Goal-conditioned RL with Imagined Subgoals. ICML 2021.
-[R4] Flattening Hierarchies with Policy Bootstrapping. NeurIPS 2025.
 
 ---
 
-## MQ6. Training Time / Wall-Clock Overhead
+## MQ3. Training Time / Wall-Clock Overhead
 
 **Raised by:** Reviewer UQ5F (W4), Reviewer k84A (Q2)
 
@@ -180,7 +93,7 @@ Given that GCHR reaches equivalent success rates 1.5–2× faster in environment
 
 ---
 
-## MQ7. Coverage Expansion — Direct Empirical Evidence
+## MQ4. Coverage Expansion — Direct Empirical Evidence
 
 **Raised by:** Reviewer XYhH (Q4), Reviewer k84A (implicitly via Theorem 6.1)
 
@@ -212,7 +125,7 @@ In higher-dimensional action spaces, the distance-based novelty criterion become
 
 ---
 
-## MQ8. Notation and Naming Inconsistencies
+## MQ5. Notation and Naming Inconsistencies
 
 **Raised by:** Reviewer k84A (W2), Reviewer XYhH (W4)
 
