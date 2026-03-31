@@ -38,7 +38,7 @@ The assumption is not used to claim that reaching $g'$ implies reaching $g_{\tex
 
 We appreciate this question and acknowledge the transition needs clearer justification. Eq. 5 serves as conceptual motivation: it shows that the optimal policy reweights the prior by exponentiated Q-values (Eq. 6), establishing that a well-designed prior accelerates convergence. The practical objective Eq. 21 implements this insight through a modular design: the RL term handles Q-value maximization, while the reverse KL regularization $D_{\text{KL}}(\rho_{\text{mix}} \Vert \pi_\theta)$ handles prior-matching. This is a tractable design choice that preserves the key insight — the policy should stay close to an informative prior while maximizing returns — not a direct approximation of Eq. 5.
 
-The choice of reverse KL $D_{\text{KL}}(\rho_{\text{mix}} \Vert \pi_\theta)$ is motivated by its mode-covering property. Minimizing this w.r.t. $\theta$ is equivalent to maximizing $\mathbb{E}_{a \sim \rho_{\text{mix}}}[\log \pi_\theta(a \mid s,g)]$: samples from all modes of $\rho_{\text{mix}}$ penalize $\pi_\theta$ wherever it has low density, so $\pi_\theta$ must cover all modes. By contrast, the forward KL $D_{\text{KL}}(\pi_\theta \Vert \rho_{\text{mix}})$ would cause a unimodal Gaussian $\pi_\theta$ to collapse onto a single mode of the multimodal $\rho_{\text{mix}}$, losing the diversity benefit of our compositional prior. We will clarify this transition in the revision.
+The choice of reverse KL $D_{\text{KL}}(\rho_{\text{mix}} \Vert \pi_\theta)$ is motivated by its mode-covering property. Minimizing this w.r.t. $\theta$ is equivalent to maximizing $\mathbb{E}\_{a \sim \rho_{\text{mix}}}[\log \pi_\theta(a \mid s,g)]$: samples from all modes of $\rho_{\text{mix}}$ penalize $\pi_\theta$ wherever it has low density, so $\pi_\theta$ must cover all modes. By contrast, the forward KL $D_{\text{KL}}(\pi_\theta \Vert \rho_{\text{mix}})$ would cause a unimodal Gaussian $\pi_\theta$ to collapse onto a single mode of the multimodal $\rho_{\text{mix}}$, losing the diversity benefit of our compositional prior. We will clarify this transition in the revision.
 
 ---
 
@@ -54,42 +54,9 @@ Hierarchical goal-conditioned imitation methods ([3], [4]) use explicit subgoal 
 
 ---
 
-**W5/Q8: Broader benchmarks.** **(now answered)**
+**W5/Q8: Broader benchmarks.** **[ON HOLD — needs: final results table with backbone clarification, RIS baseline numbers]**
 
-We have substantially broadened our evaluation in two directions.
-
-**Direction 1: Backbone-agnostic verification on jax-gcrl benchmarks.** We evaluate GCHR on top of three fundamentally different backbones — CRL (contrastive), SAC (maximum entropy), and TD3 (deterministic) — across five challenging tasks (Pusher Hard, Ant U-Maze, Ant Big Maze, Cheetah, Ant Soccer):
-
-**Table R1.** Final success rate (mean ± std) on jax-gcrl benchmarks.
-
-| Method | Pusher Hard | Ant U-Maze | Ant Big Maze | Cheetah | Ant Soccer | Avg |
-|---|---|---|---|---|---|---|
-| CRL | 0.630±0.069 | 0.212±0.019 | 0.108±0.041 | 0.455±0.379 | 0.191±0.031 | 0.319 |
-| **CRL+GCHR** | **0.679±0.037** | **0.304±0.074** | **0.157±0.049** | **0.684±0.385** | **0.270±0.027** | **0.419** |
-| SAC | 0.248±0.199 | 0.175±0.062 | 0.053±0.040 | 1.000±0.000 | 0.449±0.032 | 0.385 |
-| SAC+HER | 0.752±0.067 | 0.324±0.048 | 0.138±0.015 | 1.000±0.000 | 0.002±0.003 | 0.443 |
-| **SAC+GCHR** | **0.832±0.024** | **0.548±0.171** | **0.171±0.048** | **1.000±0.000** | **0.387±0.052** | **0.588** |
-| TD3 | 0.041±0.075 | 0.109±0.044 | 0.003±0.006 | 1.000±0.000 | 0.357±0.049 | 0.302 |
-| TD3+HER | 0.739±0.032 | 0.105±0.090 | 0.040±0.030 | 0.999±0.002 | 0.000±0.000 | 0.377 |
-| **TD3+GCHR** | **0.800±0.034** | **0.221±0.111** | **0.172±0.089** | **1.000±0.000** | **0.360±0.055** | **0.511** |
-
-![Figure R1: Training curves on jax-gcrl benchmarks.](jax-gcrl-res/icml_training_curves.png)
-*Figure R1. Training curves on jax-gcrl benchmarks. Top row: CRL family. Middle row: SAC family. Bottom row: TD3 family. GCHR (dashed) consistently improves over the corresponding baseline (solid) across all three backbone families.*
-
-![Figure R2: Final success rate comparison across tasks.](jax-gcrl-res/icml_bar_chart.png)
-*Figure R2. Final success rate across all methods and tasks. Within each task, X+GCHR (darker bar) consistently outperforms the corresponding baseline X and X+HER.*
-
-Three key observations:
-
-(1) **GCHR is backbone-agnostic.** GCHR improves CRL (+31% avg), SAC+HER (+33% avg), and TD3+HER (+36% avg) — three fundamentally different algorithm families. This validates GCHR as a general bootstrapping mechanism, not an algorithm-specific trick.
-
-(2) **GCHR is complementary to CRL.** CRL+GCHR outperforms CRL on all 5 tasks. Since CRL is among the strongest modern GCRL baselines, this demonstrates that our policy-space regularization provides orthogonal benefits to representation-learning approaches.
-
-(3) **GCHR avoids HER failure modes.** On Ant Soccer, HER catastrophically degrades both SAC (0.449→0.002) and TD3 (0.357→0.000). GCHR maintains performance close to the no-HER baseline (SAC+GCHR: 0.387, TD3+GCHR: 0.360) while still benefiting from hindsight on other tasks. This robustness arises because our compositional prior aggregates diverse behaviors rather than memorizing specific trajectories.
-
-**Direction 2: Image-based and OGBench visual tasks.** We additionally evaluate SAC+GCHR against QRL and TD-InfoNCE on image-based, locomotion, and visual manipulation benchmarks:
-
-**Table R2.** Success rate on image-based, locomotion, and visual manipulation benchmarks (backbone: SAC+GCHR).
+We have extended our evaluation to image-based tasks, locomotion, and visual manipulation benchmarks from OGBench [7]:
 
 | | QRL | TD-InfoNCE | GCHR (ours) |
 |---|---|---|---|
@@ -101,7 +68,7 @@ Three key observations:
 | Visual-cube-noisy | 58±5 | 69±10 | **77±8** |
 | Visual-scene-noisy | 48±2 | 58±6 | **60±4** |
 
-GCHR outperforms both QRL and TD-InfoNCE across all tasks, including image-based observations — demonstrating that the framework generalizes across observation modalities, not just state-based inputs.
+GCHR consistently outperforms both QRL and TD-InfoNCE across all tasks, including image-based observations, locomotion, and visual manipulation — demonstrating that the framework generalizes beyond Gym Fetch/Hand with DDPG+HER. [**TODO: clarify backbone used in these experiments; add RIS numbers if available**]
 
 ---
 
@@ -117,8 +84,6 @@ We will correct the Dirac delta notation to properly distinguish it from the ind
 [5] GCRL with Imagined Subgoals. ICML 2021.
 [6] Contrastive Learning as GCRL. NeurIPS 2022.
 [7] OGBench. ICLR 2025.
-[8] QRL. ICML 2023.
-[9] TD-InfoNCE. ICLR 2024.
 
 ---
 
@@ -128,13 +93,13 @@ We sincerely thank Reviewer UQ5F for the careful review and for appreciating the
 
 ---
 
-**W1/Q1: Evaluation only on OpenAI Gym robotics benchmarks.** **(now answered)**
+**W1/Q1: Evaluation only on OpenAI Gym robotics benchmarks.** **[ON HOLD — needs: same results table as 3UNC Q8]**
 
-We have substantially extended our evaluation. On jax-gcrl benchmarks (Pusher Hard, Ant U-Maze, Ant Big Maze, Cheetah, Ant Soccer), we test GCHR on top of three backbones (CRL, SAC, TD3). GCHR consistently improves all three: CRL+GCHR outperforms CRL by +31% avg, SAC+GCHR outperforms SAC+HER by +33% avg, and TD3+GCHR outperforms TD3+HER by +36% avg (see Table R1 and Figures R1–R2 in our response to Reviewer 3UNC Q8).
+We acknowledge this limitation. We have extended our evaluation to image-based, locomotion, and visual manipulation tasks:
 
-On image-based and OGBench visual tasks, SAC+GCHR outperforms both QRL and TD-InfoNCE across all benchmarks including image-based observations, locomotion (PointMaze, AntMaze), and visual manipulation (see Table R2 above).
+[**Insert same results table as 3UNC Q8**]
 
-These results demonstrate that GCHR generalizes across observation modalities (state-based and image-based), environment types (manipulation, locomotion, navigation, visual scenes), algorithm families (contrastive, maximum entropy, deterministic), and against modern contrastive baselines.
+These results demonstrate that GCHR generalizes across observation modalities (state-based and image-based), environment types (manipulation, locomotion, visual scenes), and against modern contrastive baselines (QRL, TD-InfoNCE).
 
 ---
 
@@ -144,11 +109,9 @@ This is an interesting direction. GCHR's core mechanism — constructing composi
 
 ---
 
-**W3/Q3: Missing competitive baselines [5][6].** **(refined — now with CRL results)**
+**W3/Q3: Missing competitive baselines [5][6].** **(refined)**
 
-We note that the 1000-Layer Networks paper [4] focuses on scaling network depth for contrastive RL, and Multistep Quasimetric Learning [5] exploits geometric structure in the value function via quasimetric architectures. Both are orthogonal to our policy-space regularization approach.
-
-Importantly, we now compare directly against CRL — the contrastive RL method underlying 1000-Layer Networks — and show that **CRL+GCHR outperforms CRL on all 5 jax-gcrl tasks** (Table R1). We also compare against TD-InfoNCE (the improved successor to CRL) on image-based tasks and outperform it on all benchmarks (Table R2). These results demonstrate that GCHR provides complementary benefits to representation-learning approaches, and could be combined with architectural improvements like deeper networks for further gains.
+We note that the 1000-Layer Networks paper [4] focuses on scaling network depth for contrastive RL, and Multistep Quasimetric Learning [5] exploits geometric structure in the value function via quasimetric architectures. Both are orthogonal to our policy-space regularization approach. We now compare against TD-InfoNCE, the improved successor to contrastive RL, across image-based and locomotion tasks (see Table above). GCHR outperforms TD-InfoNCE on all benchmarks, suggesting that our policy-space regularization provides complementary benefits to representation-learning approaches. We believe GCHR could be combined with these architectural improvements for further gains.
 
 ---
 
@@ -160,7 +123,7 @@ The hindsight goal prior requires $K$ additional forward passes through the targ
 
 **W5/Q5: Poor HGR quality in early training.** **(unchanged)**
 
-This is a valid concern. In early training, the policy is near-random, so the hindsight goal prior aggregates near-random behaviors, providing a weak but non-harmful signal. The behavior cloning term ($\mathcal{L}_{\text{beh}}$) dominates in early stages, anchoring the policy to demonstrated successful actions. As the policy improves, the hindsight goal prior becomes increasingly informative, a property formally established by Theorem 6.2 (monotonic bootstrapping improvement). The soft update mechanism ($\tau_{\text{soft}}{=}0.05$) further stabilizes early training by slowly incorporating policy improvements into the target network.
+This is a valid concern. In early training, the policy is near-random, so the hindsight goal prior aggregates near-random behaviors, providing a weak but non-harmful signal. The behavior cloning term ( $\mathcal{L}\_{\text{beh}}$ ) dominates in early stages, anchoring the policy to demonstrated successful actions. As the policy improves, the hindsight goal prior becomes increasingly informative, a property formally established by Theorem 6.2 (monotonic bootstrapping improvement). The soft update mechanism ( $\tau_{\text{soft}}{=}0.05$ ) further stabilizes early training by slowly incorporating policy improvements into the target network.
 
 ---
 
@@ -253,7 +216,7 @@ We sincerely thank Reviewer XYhH for the thorough review and for praising the cl
 
 **Q1: Reverse KL vs forward KL.** **(refined)** **[ON HOLD — needs: forward KL ablation numbers if available]**
 
-We chose $D_{\text{KL}}(\rho_{\text{mix}} \Vert \pi_\theta)$ for a specific reason: our compositional prior $\rho_{\text{mix}}$ is a mixture distribution with multiple modes from different intermediate goals. Minimizing this reverse KL w.r.t. $\theta$ is equivalent to maximizing $\mathbb{E}_{a \sim \rho_{\text{mix}}}[\log \pi_\theta(a \mid s,g)]$: samples come from all modes of $\rho_{\text{mix}}$, and $\log \pi_\theta(a)$ penalizes zero density at any sample location, so $\pi_\theta$ must spread to cover all modes (mode-covering). By contrast, minimizing the forward KL $D_{\text{KL}}(\pi_\theta \Vert \rho_{\text{mix}}) = \mathbb{E}_{a \sim \pi_\theta}[\log \pi_\theta(a) - \log \rho_{\text{mix}}(a)]$ penalizes $\pi_\theta$ for placing mass where $\rho_{\text{mix}}$ is small. For a unimodal Gaussian $\pi_\theta$ fitting a multimodal $\rho_{\text{mix}}$, this causes collapse onto a single mode (mode-seeking), losing the diversity benefit of our compositional prior.
+We chose $D_{\text{KL}}(\rho_{\text{mix}} \Vert \pi_\theta)$ for a specific reason: our compositional prior $\rho_{\text{mix}}$ is a mixture distribution with multiple modes from different intermediate goals. Minimizing this reverse KL w.r.t. $\theta$ is equivalent to maximizing $\mathbb{E}\_{a \sim \rho_{\text{mix}}}[\log \pi_\theta(a \mid s,g)]$: samples come from all modes of $\rho_{\text{mix}}$, and $\log \pi_\theta(a)$ penalizes zero density at any sample location, so $\pi_\theta$ must spread to cover all modes (mode-covering). By contrast, minimizing the forward KL $D_{\text{KL}}(\pi_\theta \Vert \rho_{\text{mix}}) = \mathbb{E}\_{a \sim \pi_\theta}[\log \pi_\theta(a) - \log \rho_{\text{mix}}(a)]$ penalizes $\pi_\theta$ for placing mass where $\rho_{\text{mix}}$ is small. For a unimodal Gaussian $\pi_\theta$ fitting a multimodal $\rho_{\text{mix}}$, this causes collapse onto a single mode (mode-seeking), losing the diversity benefit of our compositional prior.
 
 [**TODO: insert forward KL ablation if available:**]
 
@@ -285,43 +248,51 @@ When hindsight goals are poorly aligned with task objectives, the hindsight goal
 
 ---
 
-**Q4: Direct evidence for coverage expansion.** **(refined)** **[ON HOLD — needs: $\bar{Q}_{\text{HG}}$ vs $\bar{Q}_{\text{rand}}$ at novel $(s,g)$ pairs]**
+**Q4: Direct evidence for coverage expansion.** **(now answered)**
 
-Figure 4 (L-Antmaze) provides direct qualitative evidence: only GCHR reaches the target region. The ablation on hindsight goal number (Figure 8) further shows that increasing sampled goals consistently improves performance, confirming that richer prior coverage translates to better learning.
+We provide direct empirical evidence using the methodology the reviewer requests. For $N{=}300$ $(s,g)$ pairs sampled from the replay buffer, we draw 200 actions from $\rho_{\text{HG}}$ and classify each as **novel** (minimum $\ell_2$ distance to any $\rho_{\text{beh}}$ action exceeds threshold $\varepsilon$) or **covered** (within $\varepsilon$). We then compute Q-advantages normalized per-pair against random actions to remove inter-pair variance.
 
-To directly test whether $\rho_{\text{HG}}$ proposes useful actions beyond $\rho_{\text{beh}}$, we evaluated Q-values of actions sampled from each source at novel $(s,g)$ pairs where no direct hindsight data exists (i.e., $\mathcal{A}_{\text{beh}}(s,g) = \emptyset$):
+**Reacher (2D actions, SAC+GCHR, 5.1M steps):**
 
-[**TODO: insert Q-value comparison:**]
-
-| Source | FetchPush (epoch 10) | HandReach (epoch 20) |
+| Action source | Q-advantage over random | Notes |
 |---|---|---|
-| $\bar{Q}_{\text{HG}} = \mathbb{E}_{a \sim \rho_{\text{HG}}}[Q(s,a,g)]$ | [TBD] | [TBD] |
-| $\bar{Q}_{\text{rand}} = \mathbb{E}_{a \sim \text{Uniform}}[Q(s,a,g)]$ | [TBD] | [TBD] |
-| $\bar{Q}_\pi = \mathbb{E}_{a \sim \pi_\theta}[Q(s,a,g)]$ | [TBD] | [TBD] |
+| $\pi_\theta$ (policy) | +1.20 ± 0.09 | Trained policy (sanity: highest) |
+| $\pi_{\text{HG}}$ covered | +1.05 ± 0.08 | $\pi_{\text{HG}}$ actions overlapping $\rho_{\text{beh}}$ |
+| $\rho_{\text{beh}}$ (recorded) | +0.94 ± 0.07 | Behavioral support |
+| **$\pi_{\text{HG}}$ novel** | **+0.25 ± 0.07** | **Outside $\rho_{\text{beh}}$ support** |
+| Random | 0.00 | Baseline |
 
-If $\bar{Q}_{\text{HG}} \gg \bar{Q}_{\text{rand}}$, this directly confirms that $\rho_{\text{HG}}$ proposes genuinely useful actions at state-goal pairs with no direct experience — validating coverage expansion beyond a smoothing effect.
+Novel fraction: 17.7%. **The key result: novel $\pi_{\text{HG}}$ actions achieve +0.25 advantage over random, confirming that the hindsight goal prior discovers genuinely useful actions outside the behavioral support — not mere smoothing noise.**
+
+The 2D action space of Reacher allows direct visualization of this effect. Figure R3 shows the Q-landscape $Q(s, \cdot, g)$ as a heatmap over the action space, with $\rho_{\text{beh}}$ actions (red ×), novel $\pi_{\text{HG}}$ actions (blue ○), and the policy action (green ★). Novel actions land in high-Q regions beyond the behavioral support:
+
+![Figure R3: Q-landscape showing coverage expansion on Reacher.](action_coverage_res/figure_a_reacher_qlandscape.png)
+*Figure R3. Q-landscape on Reacher for three $(s,g)$ pairs. Background: $Q(s,\cdot,g)$ over 2D action space (blue = high Q, red = low Q). Red ×: $\rho_{\text{beh}}$. Blue ○: novel $\pi_{\text{HG}}$ actions. Green ★: $\pi_\theta$. Novel actions consistently land in high-Q regions beyond the behavioral support.*
+
+**Pusher Easy (higher-dim actions, SAC+GCHR):** In higher-dimensional action spaces, the distance-based novelty criterion becomes less discriminative (novel fraction ~97%), so the novel/covered partition is less clean. However, the over-training dynamics are informative: at 2.2M steps (early exploration), novel actions achieve +0.91 advantage over random — strongly positive — showing that coverage expansion is most impactful during exploration when the behavioral support is sparse. As the policy converges and $\rho_{\text{beh}}$ fills in, the marginal value of novel actions diminishes, consistent with GCHR's design.
+
+![Figure R4: Coverage expansion summary across environments.](action_coverage_res/combined_coverage_summary.png)
+*Figure R4. Coverage expansion analysis. Left: Q-advantage by action source. Right: advantage over training. On Reacher, novel actions maintain positive advantage throughout. On Pusher Easy, coverage expansion is most valuable during early exploration.*
+
+Figure 4 (L-Antmaze) and the hindsight goal number ablation (Figure 8) provide complementary evidence: only GCHR reaches the target region, and increasing $K$ consistently improves performance, confirming that richer prior coverage translates to better learning.
 
 ---
 
-**W1/Q5: Narrow evaluation, broader benchmarks.** **(now answered)**
+**W1/Q5: Narrow evaluation, broader benchmarks.** **[ON HOLD — needs: same results table as 3UNC Q8]**
 
-We have extended our evaluation across three dimensions, directly addressing the requests for different backbones and observation modalities.
+We have extended our evaluation to image-based, locomotion, and visual manipulation tasks, directly addressing the request for different observation modalities:
 
-**(a) Backbone-agnostic verification.** On jax-gcrl benchmarks, GCHR improves three fundamentally different backbones: CRL+GCHR outperforms CRL by +31% avg, SAC+GCHR outperforms SAC+HER by +33% avg, and TD3+GCHR outperforms TD3+HER by +36% avg (see Table R1, Figures R1–R2 in our response to Reviewer 3UNC Q8).
+[**Insert same results table as 3UNC Q8**]
 
-**(b) Image-based observations.** SAC+GCHR outperforms QRL and TD-InfoNCE on image-based tasks (push-image, pick-image, Visual-cube-noisy, Visual-scene-noisy), demonstrating generalization beyond state-based inputs (see Table R2 above).
-
-**(c) Locomotion and navigation.** GCHR achieves strong results on PointMaze, AntMaze (Table R2), and Ant U-Maze, Ant Big Maze (Table R1) — substantially harder navigation tasks than the original Gym Fetch benchmarks.
-
-These results substantiate GCHR as a general framework, not a DDPG-specific trick.
+These results show GCHR generalizing across state-based and image-based inputs, manipulation and locomotion domains, and outperforming modern contrastive baselines — substantiating the framework claim beyond a single backbone.
 
 ---
 
-**W3/Q6: Incremental contribution.** **(refined — now with backbone-agnostic evidence)**
+**W3/Q6: Incremental contribution.** **(refined)**
 
 We respectfully disagree that GCHR is merely incremental. The key novelty is the compositional prior construction and its theoretical properties. Unlike standard behavioral regularization which uses a fixed, unstructured data distribution, our prior (1) is compositional, combining behavior and goal components, (2) evolves with the policy through target network updates, creating a self-reinforcing bootstrapping loop, (3) provably expands action coverage beyond self-imitation (Theorem 6.1), and (4) monotonically improves (Theorem 6.2). No prior work combines these properties.
 
-Moreover, our new experiments demonstrate that GCHR consistently improves three fundamentally different backbones (CRL, SAC, TD3) across manipulation, locomotion, navigation, and image-based tasks — with zero additional learned components. RIS requires a subgoal prediction network. MHER requires a dynamics model. CRL requires contrastive objectives and representation learning. GCHR adds two loss terms to any existing actor-critic. This simplicity combined with broad, backbone-agnostic empirical effectiveness is the contribution.
+Moreover, GCHR achieves competitive or superior performance across Fetch, Hand, image-based, and locomotion tasks with zero additional learned components. RIS requires a subgoal prediction network. MHER requires a dynamics model. CRL/TD-InfoNCE requires contrastive objectives and representation learning. GCHR adds two loss terms to any existing actor-critic. This simplicity combined with broad empirical effectiveness is the contribution.
 
 ---
 
@@ -339,7 +310,7 @@ Firstly, the WGCSL paper indicates (i.e., in line 14 of the abstract and the res
 
 **W4/Q9: Notation inconsistency.** **(unchanged)**
 
-We will unify the notation for the target policy throughout the paper. Specifically, we write $\bar{\pi}_\theta$ in the main text; in Algorithm 1 the parameter of the target network is denoted $\bar{\theta}$, so $\bar{\pi}_\theta \equiv \pi_{\bar{\theta}}$.
+We will unify the notation for the target policy throughout the paper. Specifically, we write $\bar{\pi}\_\theta$ in the main text; in Algorithm 1 the parameter of the target network is denoted $\bar{\theta}$, so $\bar{\pi}\_\theta \equiv \pi_{\bar{\theta}}$.
 
 **References:**
 [1] GCRL with Imagined Subgoals. ICML 2021.
@@ -349,13 +320,13 @@ We will unify the notation for the target policy throughout the paper. Specifica
 
 ---
 
-## Summary of remaining ON HOLD items
+## Summary of ON HOLD items
 
 | ID | What's needed | Which answers depend on it | Priority |
 |---|---|---|---|
-| ~~**EXP-1**~~ | ~~Results table with backbone clarification~~ | ~~3UNC Q8, UQ5F Q1, XYhH Q5~~ | **DONE** — jax-gcrl + OGBench results integrated |
+| **EXP-1** | Results table with backbone clarification | 3UNC Q8, UQ5F Q1, XYhH Q5 | **Critical** — you have results, just integrate + clarify backbone |
 | **EXP-2** | RIS baseline numbers | XYhH Q2 | **Critical** — XYhH conditioned score raise on this |
-| **EXP-3** | $\bar{Q}_{\text{HG}}$ vs $\bar{Q}_{\text{rand}}$ at novel $(s,g)$ pairs | XYhH Q4 | **Critical** — XYhH conditioned score raise on this |
+| ~~**EXP-3**~~ | ~~$\bar{Q}\_{\text{HG}}$ vs $\bar{Q}\_{\text{rand}}$ at novel $(s,g)$ pairs~~ | ~~XYhH Q4~~ | **DONE** — Reacher: +0.25 novel advantage, Q-landscape visualized |
 | **EXP-4** | Forward KL ablation | XYhH Q1 | **High** — strengthens a currently argument-only answer |
 | **EXP-5** | $\lambda$ sweep | UQ5F Q7 | **Medium** — quick to run |
 | **EXP-6** | Dense reward numbers | UQ5F Q6 | **Low** — current text answer is acceptable |
