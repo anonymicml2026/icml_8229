@@ -76,14 +76,14 @@ We have substantially broadened our evaluation in two directions.
 ![Figure R1: Training curves on jax-gcrl benchmarks.](jax-gcrl-res/icml_training_curves.png)
 *Figure R1. Training curves on jax-gcrl benchmarks. Top row: CRL family. Middle row: SAC family. Bottom row: TD3 family. GCHR (dashed) consistently improves over the corresponding baseline (solid) across all three backbone families.*
 
-![Figure R2: Statistical significance of GCHR improvements.](jax-gcrl-res/icml_heatmap.png)
-*Figure R2. GCHR improvement over each baseline with statistical significance (Welch's t-test). All improvements are positive; most are significant at p<0.05 or stronger.*
+![Figure R2: Final success rate comparison across tasks.](jax-gcrl-res/icml_bar_chart.png)
+*Figure R2. Final success rate across all methods and tasks. Within each task, X+GCHR (darker bar) consistently outperforms the corresponding baseline X and X+HER.*
 
 Three key observations:
 
 (1) **GCHR is backbone-agnostic.** GCHR improves CRL (+31% avg), SAC+HER (+33% avg), and TD3+HER (+36% avg) — three fundamentally different algorithm families. This validates GCHR as a general bootstrapping mechanism, not an algorithm-specific trick.
 
-(2) **GCHR is complementary to CRL.** CRL+GCHR outperforms CRL on all 5 tasks with statistically significant gains. Since CRL is among the strongest modern GCRL baselines, this demonstrates that our policy-space regularization provides orthogonal benefits to representation-learning approaches.
+(2) **GCHR is complementary to CRL.** CRL+GCHR outperforms CRL on all 5 tasks. Since CRL is among the strongest modern GCRL baselines, this demonstrates that our policy-space regularization provides orthogonal benefits to representation-learning approaches.
 
 (3) **GCHR avoids HER failure modes.** On Ant Soccer, HER catastrophically degrades both SAC (0.449→0.002) and TD3 (0.357→0.000). GCHR maintains performance close to the no-HER baseline (SAC+GCHR: 0.387, TD3+GCHR: 0.360) while still benefiting from hindsight on other tasks. This robustness arises because our compositional prior aggregates diverse behaviors rather than memorizing specific trajectories.
 
@@ -130,7 +130,7 @@ We sincerely thank Reviewer UQ5F for the careful review and for appreciating the
 
 **W1/Q1: Evaluation only on OpenAI Gym robotics benchmarks.** **(now answered)**
 
-We have substantially extended our evaluation. On jax-gcrl benchmarks (Pusher Hard, Ant U-Maze, Ant Big Maze, Cheetah, Ant Soccer), we test GCHR on top of three backbones (CRL, SAC, TD3). GCHR consistently improves all three: CRL+GCHR outperforms CRL by +31% avg, SAC+GCHR outperforms SAC+HER by +33% avg, and TD3+GCHR outperforms TD3+HER by +36% avg, with statistically significant gains (see Table R1 and Figures R1–R2 in our response to Reviewer 3UNC Q8).
+We have substantially extended our evaluation. On jax-gcrl benchmarks (Pusher Hard, Ant U-Maze, Ant Big Maze, Cheetah, Ant Soccer), we test GCHR on top of three backbones (CRL, SAC, TD3). GCHR consistently improves all three: CRL+GCHR outperforms CRL by +31% avg, SAC+GCHR outperforms SAC+HER by +33% avg, and TD3+GCHR outperforms TD3+HER by +36% avg (see Table R1 and Figures R1–R2 in our response to Reviewer 3UNC Q8).
 
 On image-based and OGBench visual tasks, SAC+GCHR outperforms both QRL and TD-InfoNCE across all benchmarks including image-based observations, locomotion (PointMaze, AntMaze), and visual manipulation (see Table R2 above).
 
@@ -307,7 +307,7 @@ If $\bar{Q}_{\text{HG}} \gg \bar{Q}_{\text{rand}}$, this directly confirms that 
 
 We have extended our evaluation across three dimensions, directly addressing the requests for different backbones and observation modalities.
 
-**(a) Backbone-agnostic verification.** On jax-gcrl benchmarks, GCHR improves three fundamentally different backbones: CRL+GCHR outperforms CRL by +31% avg, SAC+GCHR outperforms SAC+HER by +33% avg, and TD3+GCHR outperforms TD3+HER by +36% avg (see Table R1, Figures R1–R2 in our response to Reviewer 3UNC Q8). All improvements are statistically significant.
+**(a) Backbone-agnostic verification.** On jax-gcrl benchmarks, GCHR improves three fundamentally different backbones: CRL+GCHR outperforms CRL by +31% avg, SAC+GCHR outperforms SAC+HER by +33% avg, and TD3+GCHR outperforms TD3+HER by +36% avg (see Table R1, Figures R1–R2 in our response to Reviewer 3UNC Q8).
 
 **(b) Image-based observations.** SAC+GCHR outperforms QRL and TD-InfoNCE on image-based tasks (push-image, pick-image, Visual-cube-noisy, Visual-scene-noisy), demonstrating generalization beyond state-based inputs (see Table R2 above).
 
