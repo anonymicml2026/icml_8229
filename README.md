@@ -1,6 +1,5 @@
-# Common Responses to Shared Reviewer Concerns
+# Common Responses (tables, plots) to Shared Reviewer Concerns
 
-We thank all reviewers for their constructive feedback. Several concerns were raised by multiple reviewers. We consolidate our responses here, with full experimental results, to avoid redundancy. Individual reviewer responses reference this document.
 
 ---
 
