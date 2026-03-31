@@ -1,5 +1,3 @@
-
-
 ## Rebuttal to Reviewer 3UNC
 
 We sincerely thank Reviewer 3UNC for the thoughtful review and for recognizing the reasonableness of our high-level intuition, the conceptual simplicity of our framework, and the large reported gains. We address each question below.
@@ -16,7 +14,7 @@ We agree that TD learning propagates reachability through value functions. Our c
 
 The target goal $g$ enters through trajectory selection. Given $(s, g)$ sampled from the replay buffer, we retrieve the trajectory $\tau$ that generated this transition and sample $K$ hindsight goals from $\mathcal{G}_H(\tau)$. While $g$ does not appear explicitly in the summation, it determines which trajectory — and thus which set of intermediate goals — is used. The corrected equation reads:
 
-$$\rho_{\text{HG}}(a|s, g) = \frac{1}{K}\sum_{k=1}^{K} \bar{\pi}_\theta(a|s, g'_k), \quad g'_k \sim \text{Uniform}(\mathcal{G}_H(\tau_{s,g}))$$
+$$\rho_{\text{HG}}(a \mid s, g) = \frac{1}{K}\sum_{k=1}^{K} \bar{\pi}_\theta(a \mid s, g'_k), \quad g'_k \sim \text{Uniform}(\mathcal{G}_H(\tau_{s,g}))$$
 
 We note that this indirect conditioning is by design: $\rho_{\text{HG}}$ provides diverse action candidates across multiple intermediate goals, while the critic $Q(s,a,g)$ provides goal-specific evaluation and selects among them. This separation — exploration breadth from the prior, goal-directed selection from the critic — is the intended division of labor. We will clarify this in the revision.
 
@@ -24,7 +22,7 @@ We note that this indirect conditioning is by design: $\rho_{\text{HG}}$ provide
 
 **Q3: If $K=1$ and $\tau_{\text{soft}}=1$, is the behavior prior a special case of the goal prior?** **(unchanged)**
 
-No. With $K=1$ and $\tau_{\text{soft}}=1$, the goal prior becomes $\pi_\theta(a|s, g')$, a continuous distributional object (Gaussian in our parameterization). The behavior prior is $\delta_{a_t}(a)$, a Dirac mass on the specific historical action. The behavior prior captures "which exact action was taken," while the goal prior captures "what the current policy would do for a nearby goal." They coincide only if the policy has perfectly memorized the action for that state-goal pair, which is generally not the case.
+No. With $K=1$ and $\tau_{\text{soft}}=1$, the goal prior becomes $\pi_\theta(a \mid s, g')$, a continuous distributional object (Gaussian in our parameterization). The behavior prior is $\delta_{a_t}(a)$, a Dirac mass on the specific historical action. The behavior prior captures "which exact action was taken," while the goal prior captures "what the current policy would do for a nearby goal." They coincide only if the policy has perfectly memorized the action for that state-goal pair, which is generally not the case.
 
 ---
 
@@ -36,11 +34,11 @@ The assumption is not used to claim that reaching $g'$ implies reaching $g_{\tex
 
 ---
 
-**Q5: Sec. 4 uses $D_{\text{KL}}(\pi \| \rho)$ but Sec. 5 optimizes $D_{\text{KL}}(\rho_{\text{mix}} \| \pi_\theta)$.** **(refined)**
+**Q5: Sec. 4 uses $D_{\text{KL}}(\pi \Vert \rho)$ but Sec. 5 optimizes $D_{\text{KL}}(\rho_{\text{mix}} \Vert \pi_\theta)$.** **(refined)**
 
-We appreciate this question and acknowledge the transition needs clearer justification. Eq. 5 serves as conceptual motivation: it shows that the optimal policy reweights the prior by exponentiated Q-values (Eq. 6), establishing that a well-designed prior accelerates convergence. The practical objective Eq. 21 implements this insight through a modular design: the RL term handles Q-value maximization, while the reverse KL regularization $D_{\text{KL}}(\rho_{\text{mix}} \| \pi_\theta)$ handles prior-matching. This is a tractable design choice that preserves the key insight — the policy should stay close to an informative prior while maximizing returns — not a direct approximation of Eq. 5.
+We appreciate this question and acknowledge the transition needs clearer justification. Eq. 5 serves as conceptual motivation: it shows that the optimal policy reweights the prior by exponentiated Q-values (Eq. 6), establishing that a well-designed prior accelerates convergence. The practical objective Eq. 21 implements this insight through a modular design: the RL term handles Q-value maximization, while the reverse KL regularization $D_{\text{KL}}(\rho_{\text{mix}} \Vert \pi_\theta)$ handles prior-matching. This is a tractable design choice that preserves the key insight — the policy should stay close to an informative prior while maximizing returns — not a direct approximation of Eq. 5.
 
-The choice of reverse KL $D_{\text{KL}}(\rho_{\text{mix}} \| \pi_\theta)$ is motivated by its mode-covering property. Minimizing this w.r.t. $\theta$ is equivalent to maximizing $\mathbb{E}_{a \sim \rho_{\text{mix}}}[\log \pi_\theta(a|s,g)]$: samples from all modes of $\rho_{\text{mix}}$ penalize $\pi_\theta$ wherever it has low density, so $\pi_\theta$ must cover all modes. By contrast, the forward KL $D_{\text{KL}}(\pi_\theta \| \rho_{\text{mix}})$ would cause a unimodal Gaussian $\pi_\theta$ to collapse onto a single mode of the multimodal $\rho_{\text{mix}}$, losing the diversity benefit of our compositional prior. We will clarify this transition in the revision.
+The choice of reverse KL $D_{\text{KL}}(\rho_{\text{mix}} \Vert \pi_\theta)$ is motivated by its mode-covering property. Minimizing this w.r.t. $\theta$ is equivalent to maximizing $\mathbb{E}\_{a \sim \rho_{\text{mix}}}[\log \pi_\theta(a \mid s,g)]$: samples from all modes of $\rho_{\text{mix}}$ penalize $\pi_\theta$ wherever it has low density, so $\pi_\theta$ must cover all modes. By contrast, the forward KL $D_{\text{KL}}(\pi_\theta \Vert \rho_{\text{mix}})$ would cause a unimodal Gaussian $\pi_\theta$ to collapse onto a single mode of the multimodal $\rho_{\text{mix}}$, losing the diversity benefit of our compositional prior. We will clarify this transition in the revision.
 
 ---
 
@@ -76,7 +74,7 @@ GCHR consistently outperforms both QRL and TD-InfoNCE across all tasks, includin
 
 **Minor: Dirac delta notation.** **(unchanged)**
 
-We will correct the Dirac delta notation to properly distinguish it from the indicator function. Specifically, for continuous action spaces, $\rho_{\text{beh}}(\cdot | s_t, \hat{g}_t) = \delta_{a_t}$ denotes the Dirac measure centered at $a_t$, satisfying $\int f(a)\, d\delta_{a_t}(a) = f(a_t)$ for any measurable $f$.
+We will correct the Dirac delta notation to properly distinguish it from the indicator function. Specifically, for continuous action spaces, $\rho_{\text{beh}}(\cdot \mid s_t, \hat{g}_t) = \delta_{a_t}$ denotes the Dirac measure centered at $a_t$, satisfying $\int f(a)\, d\delta_{a_t}(a) = f(a_t)$ for any measurable $f$.
 
 **References:**
 [1] A Minimalist Approach to Offline RL. NeurIPS 2021.
@@ -119,13 +117,13 @@ We note that the 1000-Layer Networks paper [4] focuses on scaling network depth 
 
 **W4/Q4: Training time comparison.** **(refined)**
 
-The hindsight goal prior requires $K$ additional forward passes through the target network per update (no gradient computation). Empirically, $K=10$ adds 22% wall-clock overhead compared to DDPG+HER on FetchPush. Scaling is approximately linear: $K=5$ adds 12%, $K=20$ adds 40%. Given that GCHR reaches equivalent success rates 1.5–2× faster in environment steps (Figure 9), the net wall-clock time to convergence is still favorable for $K$ up to approximately 15. We will include a detailed timing table in the revision.
+The hindsight goal prior requires $K$ additional forward passes through the target network per update (no gradient computation). Empirically, $K{=}10$ adds 22% wall-clock overhead compared to DDPG+HER on FetchPush. Scaling is approximately linear: $K{=}5$ adds 12%, $K{=}20$ adds 40%. Given that GCHR reaches equivalent success rates 1.5–2× faster in environment steps (Figure 9), the net wall-clock time to convergence is still favorable for $K$ up to approximately 15. We will include a detailed timing table in the revision.
 
 ---
 
 **W5/Q5: Poor HGR quality in early training.** **(unchanged)**
 
-This is a valid concern. In early training, the policy is near-random, so the hindsight goal prior aggregates near-random behaviors, providing a weak but non-harmful signal. The behavior cloning term ($\mathcal{L}_{\text{beh}}$) dominates in early stages, anchoring the policy to demonstrated successful actions. As the policy improves, the hindsight goal prior becomes increasingly informative, a property formally established by Theorem 6.2 (monotonic bootstrapping improvement). The soft update mechanism ($\tau_{\text{soft}}=0.05$) further stabilizes early training by slowly incorporating policy improvements into the target network.
+This is a valid concern. In early training, the policy is near-random, so the hindsight goal prior aggregates near-random behaviors, providing a weak but non-harmful signal. The behavior cloning term ( $\mathcal{L}\_{\text{beh}}$ ) dominates in early stages, anchoring the policy to demonstrated successful actions. As the policy improves, the hindsight goal prior becomes increasingly informative, a property formally established by Theorem 6.2 (monotonic bootstrapping improvement). The soft update mechanism ( $\tau_{\text{soft}}{=}0.05$ ) further stabilizes early training by slowly incorporating policy improvements into the target network.
 
 ---
 
@@ -137,7 +135,7 @@ In dense reward settings, the RL objective already provides strong learning sign
 
 **W7/Q7: Sensitivity analysis for mixture weight $\lambda$.** **(refined)** **[ON HOLD — needs: $\lambda$ sweep results if available]**
 
-We set $\lambda=0.5$ by default. While our $\alpha$ and $\beta$ ablations (Section C.1) provide related sensitivity analysis, we acknowledge that $\lambda$ (which controls the mixture weight between $\rho_{\text{beh}}$ and $\rho_{\text{HG}}$ inside the prior) is not equivalent to varying $\alpha$ and $\beta$ (which control how strongly each regularization term weighs against the RL loss). For example, $\lambda=0.9$ with $\alpha=\beta=1$ gives a behavior-dominated prior, while $\lambda=0.5$ with $\alpha=1.8, \beta=0.2$ applies a balanced prior but with behavior cloning dominating the total loss. We will include an explicit $\lambda$ sweep in the revision.
+We set $\lambda{=}0.5$ by default. While our $\alpha$ and $\beta$ ablations (Section C.1) provide related sensitivity analysis, we acknowledge that $\lambda$ (which controls the mixture weight between $\rho_{\text{beh}}$ and $\rho_{\text{HG}}$ inside the prior) is not equivalent to varying $\alpha$ and $\beta$ (which control how strongly each regularization term weighs against the RL loss). For example, $\lambda{=}0.9$ with $\alpha{=}\beta{=}1$ gives a behavior-dominated prior, while $\lambda{=}0.5$ with $\alpha{=}1.8, \beta{=}0.2$ applies a balanced prior but with behavior cloning dominating the total loss. We will include an explicit $\lambda$ sweep in the revision.
 
 [**TODO: insert $\lambda$ sweep table if available:**]
 
@@ -185,13 +183,13 @@ We explored proximity-weighted sampling (weighting by inverse distance to target
 
 **Q2: Wall-clock training time scaling with $K$.** **(unchanged)**
 
-Each hindsight goal requires one target network forward pass (no gradient), which is computationally lightweight. Empirically, $K=10$ adds 22% wall-clock time compared to DDPG+HER on FetchPush. Scaling is approximately linear: $K=5$ adds 12%, $K=20$ adds 40%. Given that GCHR reaches equivalent success rates 1.5–2× faster in environment steps (Figure 9), the net wall-clock time to convergence is still favorable for $K$ up to approximately 15. We use $K=10$ as the default.
+Each hindsight goal requires one target network forward pass (no gradient), which is computationally lightweight. Empirically, $K{=}10$ adds 22% wall-clock time compared to DDPG+HER on FetchPush. Scaling is approximately linear: $K{=}5$ adds 12%, $K{=}20$ adds 40%. Given that GCHR reaches equivalent success rates 1.5–2× faster in environment steps (Figure 9), the net wall-clock time to convergence is still favorable for $K$ up to approximately 15. We use $K{=}10$ as the default.
 
 ---
 
 **Q3: Monte Carlo KL estimate reliability in high-dimensional action spaces.** **(unchanged)**
 
-We measured the variance of the KL estimate (Eq. 22) across $M$ values. For HandReach (20-DoF), increasing $M$ from $K=10$ to 50 reduced estimate variance by approximately 60% but did not improve final performance, suggesting that the noisy gradient signal from $M=K$ is sufficient for optimization. This is consistent with standard practice in variational inference where noisy gradient estimates often suffice. We will report this analysis in the revision.
+We measured the variance of the KL estimate (Eq. 22) across $M$ values. For HandReach (20-DoF), increasing $M$ from $K{=}10$ to 50 reduced estimate variance by approximately 60% but did not improve final performance, suggesting that the noisy gradient signal from $M{=}K$ is sufficient for optimization. This is consistent with standard practice in variational inference where noisy gradient estimates often suffice. We will report this analysis in the revision.
 
 ---
 
@@ -218,14 +216,14 @@ We sincerely thank Reviewer XYhH for the thorough review and for praising the cl
 
 **Q1: Reverse KL vs forward KL.** **(refined)** **[ON HOLD — needs: forward KL ablation numbers if available]**
 
-We chose $D_{\text{KL}}(\rho_{\text{mix}} \| \pi_\theta)$ for a specific reason: our compositional prior $\rho_{\text{mix}}$ is a mixture distribution with multiple modes from different intermediate goals. Minimizing this reverse KL w.r.t. $\theta$ is equivalent to maximizing $\mathbb{E}_{a \sim \rho_{\text{mix}}}[\log \pi_\theta(a|s,g)]$: samples come from all modes of $\rho_{\text{mix}}$, and $\log \pi_\theta(a)$ penalizes zero density at any sample location, so $\pi_\theta$ must spread to cover all modes (mode-covering). By contrast, minimizing the forward KL $D_{\text{KL}}(\pi_\theta \| \rho_{\text{mix}}) = \mathbb{E}_{a \sim \pi_\theta}[\log \pi_\theta(a) - \log \rho_{\text{mix}}(a)]$ penalizes $\pi_\theta$ for placing mass where $\rho_{\text{mix}}$ is small. For a unimodal Gaussian $\pi_\theta$ fitting a multimodal $\rho_{\text{mix}}$, this causes collapse onto a single mode (mode-seeking), losing the diversity benefit of our compositional prior.
+We chose $D_{\text{KL}}(\rho_{\text{mix}} \Vert \pi_\theta)$ for a specific reason: our compositional prior $\rho_{\text{mix}}$ is a mixture distribution with multiple modes from different intermediate goals. Minimizing this reverse KL w.r.t. $\theta$ is equivalent to maximizing $\mathbb{E}\_{a \sim \rho_{\text{mix}}}[\log \pi_\theta(a \mid s,g)]$: samples come from all modes of $\rho_{\text{mix}}$, and $\log \pi_\theta(a)$ penalizes zero density at any sample location, so $\pi_\theta$ must spread to cover all modes (mode-covering). By contrast, minimizing the forward KL $D_{\text{KL}}(\pi_\theta \Vert \rho_{\text{mix}}) = \mathbb{E}\_{a \sim \pi_\theta}[\log \pi_\theta(a) - \log \rho_{\text{mix}}(a)]$ penalizes $\pi_\theta$ for placing mass where $\rho_{\text{mix}}$ is small. For a unimodal Gaussian $\pi_\theta$ fitting a multimodal $\rho_{\text{mix}}$, this causes collapse onto a single mode (mode-seeking), losing the diversity benefit of our compositional prior.
 
 [**TODO: insert forward KL ablation if available:**]
 
 | KL direction | FetchPush | HandReach |
 |---|---|---|
-| Forward $D_{\text{KL}}(\pi_\theta \| \rho_{\text{mix}})$ | [TBD] | [TBD] |
-| Reverse $D_{\text{KL}}(\rho_{\text{mix}} \| \pi_\theta)$ (ours) | [TBD] | [TBD] |
+| Forward $D_{\text{KL}}(\pi_\theta \Vert \rho_{\text{mix}})$ | [TBD] | [TBD] |
+| Reverse $D_{\text{KL}}(\rho_{\text{mix}} \Vert \pi_\theta)$ (ours) | [TBD] | [TBD] |
 
 ---
 
@@ -250,21 +248,21 @@ When hindsight goals are poorly aligned with task objectives, the hindsight goal
 
 ---
 
-**Q4: Direct evidence for coverage expansion.** **(refined)** **[ON HOLD — needs: $\bar{Q}_{\text{HG}}$ vs $\bar{Q}_{\text{rand}}$ at novel $(s,g)$ pairs]**
+**Q4: Direct evidence for coverage expansion.** **(refined)** **[ON HOLD — needs: $\bar{Q}\_{\text{HG}}$ vs $\bar{Q}\_{\text{rand}}$ at novel $(s,g)$ pairs]**
 
 Figure 4 (L-Antmaze) provides direct qualitative evidence: only GCHR reaches the target region. The ablation on hindsight goal number (Figure 8) further shows that increasing sampled goals consistently improves performance, confirming that richer prior coverage translates to better learning.
 
-To directly test whether $\rho_{\text{HG}}$ proposes useful actions beyond $\rho_{\text{beh}}$, we evaluated Q-values of actions sampled from each source at novel $(s,g)$ pairs where no direct hindsight data exists (i.e., $\mathcal{A}_{\text{beh}}(s,g) = \emptyset$):
+To directly test whether $\rho_{\text{HG}}$ proposes useful actions beyond $\rho_{\text{beh}}$, we evaluated Q-values of actions sampled from each source at novel $(s,g)$ pairs where no direct hindsight data exists (i.e., $\mathcal{A}\_{\text{beh}}(s,g) = \emptyset$):
 
 [**TODO: insert Q-value comparison:**]
 
 | Source | FetchPush (epoch 10) | HandReach (epoch 20) |
 |---|---|---|
-| $\bar{Q}_{\text{HG}} = \mathbb{E}_{a \sim \rho_{\text{HG}}}[Q(s,a,g)]$ | [TBD] | [TBD] |
-| $\bar{Q}_{\text{rand}} = \mathbb{E}_{a \sim \text{Uniform}}[Q(s,a,g)]$ | [TBD] | [TBD] |
-| $\bar{Q}_\pi = \mathbb{E}_{a \sim \pi_\theta}[Q(s,a,g)]$ | [TBD] | [TBD] |
+| $\bar{Q}\_{\text{HG}} = \mathbb{E}\_{a \sim \rho_{\text{HG}}}[Q(s,a,g)]$ | [TBD] | [TBD] |
+| $\bar{Q}\_{\text{rand}} = \mathbb{E}\_{a \sim \text{Uniform}}[Q(s,a,g)]$ | [TBD] | [TBD] |
+| $\bar{Q}\_\pi = \mathbb{E}\_{a \sim \pi_\theta}[Q(s,a,g)]$ | [TBD] | [TBD] |
 
-If $\bar{Q}_{\text{HG}} \gg \bar{Q}_{\text{rand}}$, this directly confirms that $\rho_{\text{HG}}$ proposes genuinely useful actions at state-goal pairs with no direct experience — validating coverage expansion beyond a smoothing effect.
+If $\bar{Q}\_{\text{HG}} \gg \bar{Q}\_{\text{rand}}$, this directly confirms that $\rho_{\text{HG}}$ proposes genuinely useful actions at state-goal pairs with no direct experience — validating coverage expansion beyond a smoothing effect.
 
 ---
 
@@ -300,7 +298,7 @@ Firstly, the WGCSL paper indicates (i.e., in line 14 of the abstract and the res
 
 **W4/Q9: Notation inconsistency.** **(unchanged)**
 
-We will unify the notation for the target policy throughout the paper. Specifically, we write $\bar{\pi}_\theta$ in the main text; in Algorithm 1 the parameter of the target network is denoted $\bar{\theta}$, so $\bar{\pi}_\theta \equiv \pi_{\bar{\theta}}$.
+We will unify the notation for the target policy throughout the paper. Specifically, we write $\bar{\pi}\_\theta$ in the main text; in Algorithm 1 the parameter of the target network is denoted $\bar{\theta}$, so $\bar{\pi}\_\theta \equiv \pi_{\bar{\theta}}$.
 
 **References:**
 [1] GCRL with Imagined Subgoals. ICML 2021.
@@ -316,7 +314,7 @@ We will unify the notation for the target policy throughout the paper. Specifica
 |---|---|---|---|
 | **EXP-1** | Results table with backbone clarification | 3UNC Q8, UQ5F Q1, XYhH Q5 | **Critical** — you have results, just integrate + clarify backbone |
 | **EXP-2** | RIS baseline numbers | XYhH Q2 | **Critical** — XYhH conditioned score raise on this |
-| **EXP-3** | $\bar{Q}_{\text{HG}}$ vs $\bar{Q}_{\text{rand}}$ at novel $(s,g)$ pairs | XYhH Q4 | **Critical** — XYhH conditioned score raise on this |
+| **EXP-3** | $\bar{Q}\_{\text{HG}}$ vs $\bar{Q}\_{\text{rand}}$ at novel $(s,g)$ pairs | XYhH Q4 | **Critical** — XYhH conditioned score raise on this |
 | **EXP-4** | Forward KL ablation | XYhH Q1 | **High** — strengthens a currently argument-only answer |
 | **EXP-5** | $\lambda$ sweep | UQ5F Q7 | **Medium** — quick to run |
 | **EXP-6** | Dense reward numbers | UQ5F Q6 | **Low** — current text answer is acceptable |
