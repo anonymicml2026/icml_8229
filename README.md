@@ -200,7 +200,7 @@ Novel fraction: 17.7%. **Novel $\pi_{\text{HG}}$ actions achieve +0.25 advantage
 
 The 2D action space allows direct visualization:
 
-![Figure R3: Q-landscape showing coverage expansion on Reacher.](action_coverage_res/figure_a_reacher_qlandscape.png)
+![Figure R3: Q-landscape showing coverage expansion on Reacher.](action_coverage_res/results_reacher/figure_a_reacher_qlandscape.png)
 *Figure R3. Q-landscape on Reacher for three $(s,g)$ pairs. Background: $Q(s,\cdot,g)$ over 2D action space (blue = high Q, red = low Q). Red ×: $\rho_{\text{beh}}$. Blue ○: novel $\pi_{\text{HG}}$ actions. Green ★: $\pi_\theta$. Novel actions consistently land in high-Q regions beyond the behavioral support.*
 
 ### Pusher Easy (higher-dim actions, SAC+GCHR)
