@@ -73,10 +73,10 @@ We have substantially broadened our evaluation in two directions.
 | TD3+HER | 0.739±0.032 | 0.105±0.090 | 0.040±0.030 | 0.999±0.002 | 0.000±0.000 | 0.377 |
 | **TD3+GCHR** | **0.800±0.034** | **0.221±0.111** | **0.172±0.089** | **1.000±0.000** | **0.360±0.055** | **0.511** |
 
-![Figure R1: Training curves on jax-gcrl benchmarks.](icml_training_curves.png)
+![Figure R1: Training curves on jax-gcrl benchmarks.](jax-gcrl-res/icml_training_curves.png)
 *Figure R1. Training curves on jax-gcrl benchmarks. Top row: CRL family. Middle row: SAC family. Bottom row: TD3 family. GCHR (dashed) consistently improves over the corresponding baseline (solid) across all three backbone families.*
 
-![Figure R2: Statistical significance of GCHR improvements.](icml_heatmap.png)
+![Figure R2: Statistical significance of GCHR improvements.](jax-gcrl-res/icml_heatmap.png)
 *Figure R2. GCHR improvement over each baseline with statistical significance (Welch's t-test). All improvements are positive; most are significant at p<0.05 or stronger.*
 
 Three key observations:
