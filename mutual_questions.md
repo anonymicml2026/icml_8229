@@ -105,7 +105,7 @@ The Dirac component yields the behavior cloning loss (Eq. 17); the continuous co
 
 ---
 
-## MQ4. Assumption 4.1 — Validity, Empirical Evidence, and Failure Modes
+## MQ4. Assumption 4.1 — Validity, Empirical Evidence
 
 **Raised by:** Reviewer 3UNC (Q4), Reviewer k84A (W1, Q4)
 
@@ -121,9 +121,7 @@ We agree that directly measuring this assumption would strengthen the paper, and
 
 Our empirical results already provide indirect evidence: GCHR's advantage is largest on tasks where the assumption is most reasonable (Fetch tasks, HandReach — where different configurations at the same end-effector pose have similar distances to targets), and degrades on tasks where the assumption is more approximate (BlockRotateXYZ, BlockRotateParallel — where different joint configurations achieving similar end-effector poses can have substantially different reachability to target rotations).
 
-### Failure modes when violated
 
-In environments with strong irreversibility (e.g., one-way doors), reaching intermediate goal $g'$ may place the agent in states from which target $g$ is unreachable. The RL objective in Eq. 21 provides a natural safeguard: the Q-function assigns low values to actions leading to irreversible states, effectively down-weighting misleading prior signals. The coefficient $\beta$ further controls how much the prior influences the policy. Learning reachability-weighted goal sampling is a promising direction for future work.
 
 ---
 
