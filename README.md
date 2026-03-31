@@ -97,7 +97,7 @@ Given that GCHR reaches equivalent success rates 1.5–2× faster in environment
 
 **Raised by:** Reviewer XYhH (Q4), Reviewer k84A (implicitly via Theorem 6.1)
 
-We provide direct empirical verification that $\rho_{\text{HG}}$ discovers useful actions outside the behavioral support, not mere smoothing. For $N{=}300$ $(s,g)$ pairs sampled from the replay buffer, we draw 200 actions from $\rho_{\text{HG}}$ and classify each as **novel** (minimum $\ell_2$ distance to any $\rho_{\text{beh}}$ action exceeds threshold $\varepsilon$) or **covered** (within $\varepsilon$). Q-advantages are normalized per-pair against random actions. Novel fraction: 17.7%. **Novel $\pi_{\text{HG}}$ actions achieve +0.25 advantage over random, confirming genuine coverage expansion.** These novel actions are expectedly weaker than behavioral actions (+0.25 vs +0.94), since they originate from behaviors toward *related but different* goals.
+
 
 ### Reacher (2D actions, SAC+GCHR, 5.1M steps)
 
@@ -114,7 +114,7 @@ We provide direct empirical verification that $\rho_{\text{HG}}$ discovers usefu
 The 2D action space allows direct visualization:
 
 ![Figure R3: Q-landscape showing coverage expansion on Reacher.](action_coverage_res/results_reacher/figure_a_reacher_qlandscape.png)
-*Figure R3. Q-landscape on Reacher for three $(s,g)$ pairs. Background: $Q(s,\cdot,g)$ over 2D action space (blue = high Q, red = low Q). Red ×: $\rho_{\text{beh}}$. Blue ○: novel $\pi_{\text{HG}}$ actions. Green ★: $\pi_\theta$. Novel actions consistently land in high-Q regions beyond the behavioral support.*
+*Figure R3. Q-landscape on Reacher for three $(s,g)$ pairs. Background: $Q(s,\cdot,g)$ over 2D action space (blue = high Q, red = low Q). Red ×: $\rho_{\text{beh}}$. Blue ○: novel $\pi_{\text{HG}}$ actions. Green ★: $\pi_\theta$. Novel actions consistently land in high-Q regions beyond the behavioral support. We provide direct empirical verification that $\rho_{\text{HG}}$ discovers useful actions outside the behavioral support, not mere smoothing. For $N{=}300$ $(s,g)$ pairs sampled from the replay buffer, we draw 200 actions from $\rho_{\text{HG}}$ and classify each as **novel** (minimum $\ell_2$ distance to any $\rho_{\text{beh}}$ action exceeds threshold $\varepsilon$) or **covered** (within $\varepsilon$). Q-advantages are normalized per-pair against random actions. Novel fraction: 17.7%. **Novel $\pi_{\text{HG}}$ actions achieve +0.25 advantage over random, confirming genuine coverage expansion.** These novel actions are expectedly weaker than behavioral actions (+0.25 vs +0.94), since they originate from behaviors toward *related but different* goals.*
 
 ### Pusher Easy (higher-dim actions, SAC+GCHR)
 
