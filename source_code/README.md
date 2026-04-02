@@ -1,4 +1,4 @@
-#  Multi-goal Reinforcement Learning with Subgoals Generated from Relabeling
+#  ICML 8299 Souce Code
 
 This repo contains the official implementation for GCQS.
 
@@ -40,12 +40,12 @@ Multi-goal Reinforcement Learning with Subgoals Generated from Relabeling
        └─gofar.py (GoFar agent)
        └─dwsl.py  (DWSL agent)
        └─smore.py  (SMORE agent)
-       └─gcqs.py (GCQS agent)
+       └─gcqs.py (GCHR agent)
  ```
 
 ## 2. To reproduce results in the paper
 ```
-./run_gcqs.sh
+./run_gchr.sh
 ```
 
 ## 3. Logs and checkpoints of trained models
