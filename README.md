@@ -24,10 +24,10 @@
 | **TD3+GCHR** | **0.800±0.034** | **0.221±0.111** | **0.172±0.089** | **1.000±0.000** | **0.360±0.055** | **0.511** |
 
 ![Figure R1: Training curves on jax-gcrl benchmarks.](jax-gcrl-res/icml_training_curves.png)
-*Figure R1. Training curves on jax-gcrl benchmarks. Top row: CRL family. Middle row: SAC family. Bottom row: TD3 family. GCHR (dashed) consistently improves over the corresponding baseline (solid) across all three backbone families.*
+*Figure R1. Training curves on jax-gcrl benchmarks. Top row: CRL family. Middle row: SAC family. Bottom row: TD3 family. *
 
 ![Figure R2: Final success rate comparison across tasks.](jax-gcrl-res/icml_bar_chart.png)
-*Figure R2. Final success rate across all methods and tasks. Within each task, X+GCHR (darker bar) consistently outperforms the corresponding baseline X and X+HER.*
+*Figure R2. Final success rate across all methods and tasks.*
 
 
 
@@ -117,6 +117,6 @@ Q(s,⋅,g) over the 2D action space (blue = high Q, red = low Q). Red ×: action
 
 
 ![Figure R4: Coverage expansion summary across environments.](action_coverage_res/combined_coverage_summary.png)
-*Figure R4. Left: Q-advantage by action source. Right: advantage over training. On Reacher, novel actions maintain positive advantage throughout. 
+*Figure R4. Left: Q-advantage by action source. Right: advantage over training. 
 *
 
