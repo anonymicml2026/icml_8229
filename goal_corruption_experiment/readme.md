@@ -16,13 +16,12 @@
 <p align="center">
   <img src="goal_corruption_combined.png" width="100%" />
   <br>
-  <em>Figure 1: Final success rate as a function of goal corruption fraction ρ. Performance degrades monotonically as trajectory-aligned goals are replaced with random replay-buffer goals, confirming that the content of hindsight goals drives GCHR's effectiveness.</em>
+  <em>Figure 1: Final success rate as a function of goal corruption fraction ρ.</em>
 </p>
 
 <p align="center">
   <img src="learning_curves_combined.png" width="100%" />
   <br>
-  <em>Figure 2: Learning curves across corruption levels. Clean GCHR (ρ=0) learns faster and reaches higher asymptotic performance than fully corrupted (ρ=1) in both environments. In Ant Soccer, all GCHR variants greatly outperform SAC+HER.</em>
+  <em>Figure 2: Learning curves across corruption levels. Clean GCHR (ρ=0) learns faster and reaches higher asymptotic performance than fully corrupted (ρ=1) in both environments.</em>
 </p>
 
- negative trends across both environments confirm that the *content* of the hindsight goals — not merely the regularization strength — drives the prior's effectiveness.
