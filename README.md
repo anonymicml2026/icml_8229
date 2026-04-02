@@ -75,16 +75,15 @@
 
 **Raised by:** Reviewer UQ5F (W4), Reviewer k84A (Q2)
 
-The hindsight goal prior requires $K$ additional forward passes through the target network per update step (no gradient computation needed). Empirically on FetchPush:
+**Table R1.** Wall-clock overhead and sample efficiency of GCHR vs. DDPG+HER on FetchPush as a function of $K$ (number of forward passes per update). Default: $K{=}10$.
 
-| $K$ | Wall-clock overhead vs. DDPG+HER | Env steps to 90% success |
+| $K$ | Wall-clock overhead | Env steps to 90% success |
 |---|---|---|
 | 5 | +12% | ~32k (1.6× faster) |
-| 10 (default) | +22% | ~28k (1.8× faster) |
+| 10 | +22% | ~28k (1.8× faster) |
 | 15 | +31% | ~27k (1.9× faster) |
 | 20 | +40% | ~27k (diminishing returns) |
 
-Given that GCHR reaches equivalent success rates 1.5–2× faster in environment steps, the net wall-clock time to convergence is favorable for $K$ up to approximately 15. We use $K{=}10$ as the default, balancing overhead against bootstrapping quality.
 
 ---
 
@@ -121,20 +120,3 @@ Q(s,⋅,g) over the 2D action space (blue = high Q, red = low Q). Red ×: action
 *Figure R4. Left: Q-advantage by action source. Right: advantage over training. On Reacher, novel actions maintain positive advantage throughout. On Pusher Easy, coverage expansion is most valuable during early exploration. In higher-dimensional action spaces, the distance-based novelty criterion becomes less discriminative (novel fraction ~97%). However, the training dynamics are informative: at 2.2M steps (early exploration), novel actions achieve +0.91 advantage over random, showing that coverage expansion is most impactful when the behavioral support is sparse. As the policy converges and $\rho_{\text{beh}}$ fills in, the marginal value diminishes — consistent with GCHR's design.
 *
 
----
-
-## MQ5. Notation and Naming Inconsistencies
-
-**Raised by:** Reviewer k84A (W2), Reviewer XYhH (W4)
-
-We sincerely apologize for these issues. All will be corrected in the revision:
-
-| Issue | Location | Fix |
-|---|---|---|
-| "GCQS" instead of "GCHR" | Figure 10 | Rename to GCHR |
-| $\bar{\pi}_\theta$ vs $\pi_{\bar{\theta}}$ | Eq. 10 vs Algorithm 1 | Unify: $\bar{\pi}_\theta \equiv \pi_{\bar{\theta}}$, use $\bar{\pi}_\theta$ consistently in text |
-| "=" vs "≈" | Eq. 10 vs Eq. 18 | Eq. 10 is the definition; Eq. 18 is the finite-sample approximation. Mark clearly. |
-| "Theorem Theorem 6.1" | Lines 528, 540 | Fix cross-reference formatting |
-| "Assumption Theorem 4.1" | Lines 306, 550 | Fix cross-reference formatting |
-| "sHSRe" | Appendix D, lines 839, 882 | Correct to "share" |
-| Swapped critic/policy objectives for DDPG+HER | Appendix D.1, Eqs. 33–34 | Swap to correct order |
