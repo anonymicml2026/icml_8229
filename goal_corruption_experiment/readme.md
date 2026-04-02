@@ -19,9 +19,6 @@
 | 1.00 | All random goals (no trajectory alignment) | 0.243 $\pm$ 0.083 | 0.362 $\pm$ 0.095 |
 | -- | SAC+HER (no GCHR) | 0.300 $\pm$ 0.027 | 0.001 $\pm$ 0.002 |
 
-
-**Bold**: significantly worse than full GCHR ($\rho=0$) at $p < 0.10$ (one-sided Welch's t-test or Mann-Whitney U test). One-sided tests are appropriate here because we have a directional hypothesis: corrupting goals should degrade performance.
-
 <p align="center">
   <img src="goal_corruption_combined.png" width="100%" />
   <br>
