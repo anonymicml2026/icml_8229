@@ -33,7 +33,6 @@
 
 ### (b) Image-Based and Visual Manipulation Tasks
 
-We evaluate SAC+GCHR against QRL and TD-InfoNCE (the improved successor to CRL) on image-based, locomotion, and visual manipulation benchmarks:
 
 **Table R2.** Success rate on image-based, locomotion, and visual manipulation benchmarks (backbone: SAC+GCHR).
 
@@ -47,7 +46,7 @@ We evaluate SAC+GCHR against QRL and TD-InfoNCE (the improved successor to CRL) 
 | Visual-cube-noisy | 58±5 | 69±10 | **77±8** |
 | Visual-scene-noisy | 48±2 | 58±6 | **60±4** |
 
-GCHR outperforms both QRL and TD-InfoNCE across all tasks, demonstrating generalization across observation modalities (state-based and image-based), environment types (manipulation, locomotion, navigation, visual scenes), and against modern contrastive baselines.
+
 
 ---
 
@@ -57,9 +56,9 @@ GCHR outperforms both QRL and TD-InfoNCE across all tasks, demonstrating general
 
 ## MQ2. RIS experimental comparison
 
-All methods use the **SAC backbone** for fair comparison:
 
-**Table R3.** Success rate (%) on Fetch benchmarks (all methods: SAC backbone).
+
+**Table R3.** Success rate (%) on Fetch benchmarks (all methods: SAC backbone). All methods use the **SAC backbone** for fair comparison.
 
 | Method | FetchReach | FetchPush | FetchSlide | FetchPick |
 |---|---|---|---|---|
