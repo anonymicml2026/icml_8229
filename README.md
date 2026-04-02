@@ -7,11 +7,8 @@
 
 **Raised by:** Reviewer 3UNC (W5), Reviewer UQ5F (W1, W3), Reviewer k84A (implicitly), Reviewer XYhH (W1)
 
-We have substantially broadened our evaluation in three directions: (a) backbone-agnostic verification on jax-gcrl, (b) image-based and visual manipulation tasks, and (c) comparison against modern contrastive GCRL baselines.
-
 ### (a) Backbone-Agnostic Verification (jax-gcrl)
 
-We evaluate GCHR on top of three fundamentally different backbones — CRL (contrastive), SAC (maximum entropy), and TD3 (deterministic) — across five challenging tasks:
 
 **Table R1.** Final success rate (mean ± std) on jax-gcrl benchmarks.
 
