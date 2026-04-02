@@ -111,12 +111,12 @@ The 2D action space allows direct visualization:
 *Figure R3. Coverage expansion on Reacher. Background heatmap: Q(s,⋅,g)Q(s,\cdot,g)
 Q(s,⋅,g) over the 2D action space (blue = high Q, red = low Q). Red ×: actions from ρbeh\rho_{\text{beh}}
 ρbeh​ (behavioral support). Blue ○: novel actions from πHG\pi_{\text{HG}}
-πHG​ (outside behavioral support). Green ★: current policy action. The blue dots land in high-Q (blue) regions beyond the red crosses, showing that the hindsight goal prior discovers valuable actions that behavioral cloning alone would miss.*
+πHG​ (outside behavioral support). Green ★: current policy action.*
 
 ### Pusher Easy (higher-dim actions, SAC+GCHR)
 
 
 ![Figure R4: Coverage expansion summary across environments.](action_coverage_res/combined_coverage_summary.png)
-*Figure R4. Left: Q-advantage by action source. Right: advantage over training. On Reacher, novel actions maintain positive advantage throughout. On Pusher Easy, coverage expansion is most valuable during early exploration. In higher-dimensional action spaces, the distance-based novelty criterion becomes less discriminative (novel fraction ~97%). However, the training dynamics are informative: at 2.2M steps (early exploration), novel actions achieve +0.91 advantage over random, showing that coverage expansion is most impactful when the behavioral support is sparse. As the policy converges and $\rho_{\text{beh}}$ fills in, the marginal value diminishes — consistent with GCHR's design.
+*Figure R4. Left: Q-advantage by action source. Right: advantage over training. On Reacher, novel actions maintain positive advantage throughout. 
 *
 
