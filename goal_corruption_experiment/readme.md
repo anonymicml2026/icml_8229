@@ -20,6 +20,19 @@
 | -- | SAC+HER (no GCHR) | 0.300 $\pm$ 0.027 | 0.001 $\pm$ 0.002 |
 
 
+**Bold**: significantly worse than full GCHR ($\rho=0$) at $p < 0.10$ (one-sided Welch's t-test or Mann-Whitney U test). One-sided tests are appropriate here because we have a directional hypothesis: corrupting goals should degrade performance.
+
+<p align="center">
+  <img src="goal_corruption_combined.png" width="100%" />
+  <br>
+  <em>Figure 1: Final success rate as a function of goal corruption fraction ρ. Performance degrades monotonically as trajectory-aligned goals are replaced with random replay-buffer goals, confirming that the content of hindsight goals drives GCHR's effectiveness.</em>
+</p>
+
+<p align="center">
+  <img src="learning_curves_combined.png" width="100%" />
+  <br>
+  <em>Figure 2: Learning curves across corruption levels. Clean GCHR (ρ=0) learns faster and reaches higher asymptotic performance than fully corrupted (ρ=1) in both environments. In Ant Soccer, all GCHR variants greatly outperform SAC+HER.</em>
+</p>
 
 
 ## Notes on Statistical Testing
